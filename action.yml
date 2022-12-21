@@ -1,5 +1,8 @@
 name: 'Publish PR Packages'
 author: 'pi0neerpat'
+branding:
+  icon: 'package'
+  color: 'blue'
 description: 'Publish a test package for each PR'
 inputs:
   token:

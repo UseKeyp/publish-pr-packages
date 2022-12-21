@@ -1,8 +1,7 @@
 {
-  "name": "publish-pr-package",
-  "version": "0.0.0",
+  "name": "publish-pr-packages",
+  "version": "1.0.0",
   "description": "Container template action using actions/toolkit",
-  "main": "lib/main.js",
   "scripts": {
     "build": "tsc",
     "format": "prettier --write **/*.ts",
@@ -10,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/container-toolkit-template.git"
+    "url": "git+https://github.com/UseKeyp/keyp-package-publisher.git"
   },
   "keywords": [
     "actions",
@@ -18,12 +17,12 @@
     "toolkit",
     "setup"
   ],
-  "author": "GitHub",
-  "license": "ISC",
+  "author": "pi0neerpat",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/actions/container-toolkit-template/issues"
+    "url": "https://github.com/actions/UseKeyp/keyp-package-publisher/issues"
   },
-  "homepage": "https://github.com/actions/container-toolkit-template#readme",
+  "homepage": "https://github.com/actions/UseKeyp/keyp-package-publisher#readme",
   "dependencies": {
     "@actions/core": "^1.0.0",
     "@actions/io": "^1.0.0",
