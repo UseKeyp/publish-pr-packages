@@ -13,14 +13,14 @@
 
 # Prerequisites
 
-This tool requires lerna for versioning and publishing. You must install it in the root of your repo with the following command:
+1. This tool requires lerna for versioning and publishing. You must install it in the root of your repo with the following command:
 
 ```bash
 yarn add --dev lerna
 lerna init
 ```
 
-Next ensure your `package.json` includes the packages you want to publish in the workspaces: 
+2. Next ensure your `package.json` includes the packages you want to publish in the workspaces: 
 
 ```json
 {
@@ -29,6 +29,8 @@ Next ensure your `package.json` includes the packages you want to publish in the
   ]
 }
 ```
+
+3. You must also copy the `/tasks` directory to the root of your repo. I'm open to suggestions/contributions to help eliminate this step!
 # Usage
 
 
