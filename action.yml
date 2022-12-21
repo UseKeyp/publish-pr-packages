@@ -2,42 +2,103 @@ name: 'Publish PR Packages'
 author: 'pi0neerpat'
 description: 'Publish a test package for each PR'
 inputs:
-  repository:
-    description: 'The full name of the repository containing the issue or pull request.'
-    default: ${{ github.repository }}
   token:
-    description: 'Repo scoped Personal Access Token with package:write permissions.'
+    description: 'For Github Registry: a Personal Access Token with packages:write permissions. For Npm registry: an npm Auth Token'
     required: true
+  build-command:
+    description: "Command to build run for each package"
+    default: "yarn build"
+  packages-directory:
+    description: "Relative path to your package(s)"
+    default: "packages"
+  registry:
+    description: "Which registry to publish to: github or npm"
+    default: "github"
 runs:
   using: composite
-  if: ${{ github.event.workflow_run.conclusion == 'success' }}
   steps:
-    - name: Setup git
-    - uses: actions/checkout@v2
-
-    - name: Use Node.js 14.x
-      uses: actions/setup-node@v1
+    - name: Use Node.js 16
+      uses: actions/setup-node@v3
       with:
-        node-version: 14.x
-
+        node-version: 16
+    - name: Cache "node_modules"
+      uses: actions/cache@v2
+      with:
+        path: '**/node_modules'
+        key: node_modules_${{ hashFiles('**/yarn.lock') }}
     - name: Show context
+      shell: bash
       run: |
         echo github.event_name: ${{ github.event_name }}
+        echo github.event.number: ${{ github.event.number }}
         echo github.sha: ${{ github.sha }}
         echo github.repository: ${{ github.repository }}
         echo github.ref: ${{ github.ref }}
         echo github.head_ref: ${{ github.head_ref }}
         echo github.base_ref: ${{ github.base_ref }}
+        echo "github.event.pull_request"
+        echo "  .number" ${{ github.event.pull_request.number }}
+        echo "  .state" ${{ github.event.pull_request.state }}
+        echo "  .locked" ${{ github.event.pull_request.locked }}
+        echo "  .draft" ${{ github.event.pull_request.draft }}
 
-    - name: Download artifact
-      uses: dawidd6/action-download-artifact@v2
-      with:
-        workflow: ${{ github.event.workflow_run.workflow_id }}
-        workflow_conclusion: success
+    - name: Check changeset
+      shell: bash
+      run: tasks/check-changeset.sh ${{ github.sha }} ${{ github.base_ref }}
+
+    - name: Install dependencies
+      if: env.PUBLISH_PR_ARTIFACT == 1
+      shell: bash
+      run: yarn install --immutable
+
+    - name: Build package
+      shell: bash
+      run: |
+        for d in ${{ inputs.packages-directory}}/*/ ; do (
+          cd "$d" && yarn build
+        ) done
+
+    - name: Setup PR package versions locally
+      if: env.PUBLISH_PR_ARTIFACT == 1
+      shell: bash
+      run: |
+        prNumber=${{ github.event.number }}
+        shortRev=$(git rev-parse --short ${{ github.sha }})
+        preId=PR${prNumber}.${shortRev}
+        yarn lerna version prerelease --yes --no-git-tag-version --preid ${preId}
+
+    - name: Create packages
+      if: env.PUBLISH_PR_ARTIFACT == 1
+      shell: bash
+      run: |
+        prNumber=${{ github.event.number }}
+        dirName="bin/${prNumber}"
+        mkdir -p $dirName
+        for d in ${{ inputs.packages-directory}}/*/ ; do (
+          cd "$d"
+          tgz=$(npm pack)
+          cp $tgz "../../$dirName/"
+        ) done
+        cd $dirName
+        sha="${{ github.event.pull_request.head.sha }}"
+        for f in * ; do
+          mv -- "$f" "${f%.tgz}-${sha:0:7}.tgz"
+        done
+
+    - name: Create empty artifact
+      if: env.PUBLISH_PR_ARTIFACT != 1
+      shell: bash
+      run: |
+        prNumber=${{ github.event.number }}
+        dirName="bin/${prNumber}"
+        mkdir -p $dirName
+        touch $dirName/.empty
 
     - name: Get PR data
       id: pr
+      shell: bash
       run: |
+        mv bin pr-packages
         ls -R pr-packages
         pr_number=$(ls pr-packages)
         n_packages=$(ls pr-packages/$pr_number | wc -l)
@@ -46,16 +107,17 @@ runs:
         echo "::set-output name=pr_number::$pr_number"
         echo "::set-output name=n_packages::$n_packages"
 
-    - name: Publish to github
+    - name: Publish packages to registry
+      shell: bash
       run: |
         pr_number="${{ steps.pr.outputs.pr_number }}"
-        tasks/npmrc-use-github.sh > pr-packages/$pr_number/.npmrc # using PAT
+        tasks/npmrc-use-${{ inputs.registry }}.sh > pr-packages/$pr_number/.npmrc # using PAT
         cd pr-packages/$pr_number
         for f in `ls` ; do
           npm --userconfig .npmrc publish $f --tag "PR$pr_number"
         done
       env:
-        PAT: ${{ secrets.PAT }}
+        PAT: ${{ inputs.token }}
 
     - name: Find Comment
       uses: peter-evans/find-comment@v1
@@ -71,20 +133,20 @@ runs:
       with:
         issue-number: ${{ steps.pr.outputs.pr_number }}
         body: |
-          ### 📦 PR Package
-                               
+          ### 📦 PR Package Available
+
           ```bash
-          yarn add @treasure-chess/treasure-contracts@PR${{ steps.pr.outputs.pr_number }} --registry https://npm.pkg.github.com
+          yarn add my-package@PR${{ steps.pr.outputs.pr_number }} --registry https://npm.pkg.github.com
           ```
 
           <details><summary>:octocat: Click to learn how to use Github packages</summary>
 
-          To use the Github package registry, create a token with "read:packages" permission. See [Creating a personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) for help.
+          First [create a personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) with "read:packages" permission.
 
-          Next add these lines to your `.npmrc` file, replacing TOKEN with your personal access token. See [Installing a package from Github](https://docs.github.com/en/packages/guides/configuring-npm-for-use-with-github-packages#installing-a-package) if you get stuck.
+          Next add the following lines to `~/.npmrc`, replacing <TOKEN> with your token. For more help see [Installing a package from Github](https://docs.github.com/en/packages/guides/configuring-npm-for-use-with-github-packages#installing-a-package).
 
           ```
-          //npm.pkg.github.com/:_authToken=TOKEN
+          //npm.pkg.github.com/:_authToken=<TOKEN>
           ```
 
           </details>

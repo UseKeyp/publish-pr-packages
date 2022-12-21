@@ -1,5 +1,5 @@
 {
-  "name": "container-toolkit-template",
+  "name": "publish-pr-package",
   "version": "0.0.0",
   "description": "Container template action using actions/toolkit",
   "main": "lib/main.js",
