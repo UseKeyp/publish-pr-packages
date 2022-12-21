@@ -45,12 +45,16 @@ jobs:
       - name: Checkout Source
         uses: actions/checkout@v3
       - name: Publish Package
-        uses: ./.github/actions/publish_pr_pkg
+        uses: UseKeyp/publish-pr-packages@v1.0.0
         with:
+          # REQUIRED - Github Personal Access Token or Npm Auth Token 
           token: ${{ secrets.PAT }}
+          # Command to build run for each package
           build-command: yarn build
+          # Relative path to your package(s)
           packages-directory: packages
-          registry: github
+          # Which registry to use: github, npm
+          registry: github 
 ```
 
 ## Sponsors ❤️

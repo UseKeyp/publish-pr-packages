@@ -6,7 +6,7 @@ branding:
 description: 'Publish a test package for each PR'
 inputs:
   token:
-    description: 'For Github Registry: a Personal Access Token with packages:write permissions. For Npm registry: an npm Auth Token'
+    description: 'Github Personal Access Token or Npm Auth Token'
     required: true
   build-command:
     description: "Command to build run for each package"
@@ -15,7 +15,7 @@ inputs:
     description: "Relative path to your package(s)"
     default: "packages"
   registry:
-    description: "Which registry to publish to: github or npm"
+    description: "Which registry to use: github, npm"
     default: "github"
 runs:
   using: composite
