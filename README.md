@@ -30,7 +30,9 @@ lerna init
 }
 ```
 
-3. You must also copy the `/tasks` directory to the root of your repo. I'm open to suggestions/contributions to help eliminate this step!
+3. You must also copy the `/tasks` directory to the root of your repo, then `chmod +x` each of them to allow for execution. I'm open to suggestions/contributions to help eliminate this step!
+
+
 # Usage
 
 

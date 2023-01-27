@@ -56,10 +56,7 @@ runs:
 
     - name: Build package
       shell: bash
-      run: |
-        for d in ${{ inputs.packages-directory}}/*/ ; do (
-          cd "$d" && yarn build
-        ) done
+      run: yarn lerna exec --no-bail --no-private -- ${{ inputs.build-command}}
 
     - name: Setup PR package versions locally
       if: env.PUBLISH_PR_ARTIFACT == 1
