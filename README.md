@@ -1,4 +1,4 @@
-<h1 align="left">Welcome to PR Package Publisher 👋</h1>
+<h1 align="left">Welcome to Publish PR Packages 👋</h1>
 <p align="left">
   <a href="#" target="_blank">
     <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-blue.svg" />
