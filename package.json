@@ -1,6 +1,6 @@
 {
   "name": "publish-pr-packages",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Container template action using actions/toolkit",
   "scripts": {
     "build": "tsc",
@@ -25,9 +25,9 @@
   "homepage": "https://github.com/actions/UseKeyp/keyp-package-publisher#readme",
   "dependencies": {
     "@actions/core": "^1.0.0",
-    "@actions/io": "^1.0.0",
     "@actions/exec": "^1.0.0",
     "@actions/github": "^1.0.0",
+    "@actions/io": "^1.0.0",
     "@actions/tool-cache": "^1.0.0"
   },
   "devDependencies": {
