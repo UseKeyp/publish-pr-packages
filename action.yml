@@ -141,10 +141,10 @@ runs:
           Use the commands below to install the most recent version of the package(s) in this Pull Request. To install from a specific commit, use the version shown in the relevant Github Action run.
 
           ```bash
+          yarn add ${{ inputs.package-name }}@PR${{ steps.pr.outputs.pr_number }} 
+          
+          # If using the Github registry (For Yarn v3, use above command)
           yarn add ${{ inputs.package-name }}@PR${{ steps.pr.outputs.pr_number }} --registry https://npm.pkg.github.com
-
-          # For Yarn v3
-          yarn add ${{ inputs.package-name }}@PR${{ steps.pr.outputs.pr_number }}
           ```
 
           <details><summary>:octocat: 🔒 Click here for instructions on installing this package from the ${{ inputs.registry }} registry.</summary>

@@ -59,6 +59,8 @@ jobs:
           packages-directory: packages
           # Which registry to use: github, npm
           registry: github 
+          # Name which will appear in the installation instruction
+          package-name: my-package
 ```
 
 ## Sponsors ❤️
