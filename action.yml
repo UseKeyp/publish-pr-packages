@@ -17,6 +17,9 @@ inputs:
   registry:
     description: "Which registry to use: github, npm"
     default: "github"
+  package-name:
+    description: "Name to use for the Github message"
+    default: "my-package"
 runs:
   using: composite
   steps:
@@ -135,18 +138,53 @@ runs:
         body: |
           ### 📦 PR Package Available
 
+          Use the commands below to install the most recent version of the package(s) in this Pull Request. To install from a specific commit, use the version shown in the relevant Github Action run.
+
           ```bash
-          yarn add my-package@PR${{ steps.pr.outputs.pr_number }} --registry https://npm.pkg.github.com
+          yarn add ${{ inputs.package-name }}@PR${{ steps.pr.outputs.pr_number }} --registry https://npm.pkg.github.com
+
+          # For Yarn v3
+          yarn add ${{ inputs.package-name }}@PR${{ steps.pr.outputs.pr_number }}
           ```
 
-          <details><summary>:octocat: Click to learn how to use Github packages</summary>
+          <details><summary>:octocat: 🔒 Click here for instructions on installing this package from the ${{ inputs.registry }} registry.</summary>
 
-          First [create a personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) with "read:packages" permission.
+          ### Github Registry
 
-          Next add the following lines to `~/.npmrc`, replacing <TOKEN> with your token. For more help see [Installing a package from Github](https://docs.github.com/en/packages/guides/configuring-npm-for-use-with-github-packages#installing-a-package).
+          You must follow these instructions if using the Github registry. If you can view this repo, then you probably have access to this package(s). Contact the repo owner if you're unsure.
+
+          In your [Github settings](https://github.com/settings/tokens), create a personal access token with `read:packages` permission ([learn more](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)). Add the following lines to `~/.npmrc` using your token ([learn more](https://docs.github.com/en/packages/guides/configuring-npm-for-use-with-github-packages#installing-a-package)).
 
           ```
-          //npm.pkg.github.com/:_authToken=<TOKEN>
+          //npm.pkg.github.com/:_authToken=<YOUR-TOKEN>
+          ```
+
+          For Yarn v3 users, add the following code in your `.yarnrc.yml` file. Don't forget to gitignore this file!
+
+          ```yml
+          npmRegistries:
+            https://npm.pkg.github.com:
+              npmAlwaysAuth: true
+              npmAuthToken: "<YOUR-TOKEN>"
+          ```
+
+          ### NPM Registry
+
+          If the package is available on the public NPM registry then you can stop here, and install the package immediately. If using [npm private packages](https://docs.npmjs.com/about-private-packages), the owner must first grant you access before continuing.
+
+          In your [NPM account](https://npmjs.com/) create a new Access Token with `Read-only` permissions. Add the following lines to `~/.npmrc` using your token ([learn more](https://docs.github.com/en/packages/guides/configuring-npm-for-use-with-github-packages#installing-a-package)).
+
+          ```
+          //registry.npmjs.org/:_authToken=<YOUR-TOKEN>
+          ```
+
+          For Yarn v3 users add the following code in your `.yarnrc.yml` file. Don't forget to gitignore this file!
+
+          ```yml
+          npmRegistries:
+            https://registry.npmjs.org:
+              npmAlwaysAuth: true
+              npmAuthToken: "<YOUR-TOKEN>"
           ```
 
           </details>
