@@ -136,20 +136,20 @@ runs:
       with:
         issue-number: ${{ steps.pr.outputs.pr_number }}
         body: |
-          ### 📦 PR Package Available
+          ### 📦 PR Package Published!
 
           Use the commands below to install the most recent version of the package(s) in this Pull Request. To install from a specific commit, use the version shown in the relevant Github Action run.
 
           ```bash
           yarn add ${{ inputs.package-name }}@PR${{ steps.pr.outputs.pr_number }} 
           
-          # If using the Github registry (For Yarn v3, use above command)
+          # If using the Github registry (For Yarn v3 use the command above)
           yarn add ${{ inputs.package-name }}@PR${{ steps.pr.outputs.pr_number }} --registry https://npm.pkg.github.com
           ```
 
-          <details><summary>:octocat: 🔒 Click here for instructions on installing this package from the ${{ inputs.registry }} registry.</summary>
+          <details><summary>📔 Click here for how to install from the ${{ inputs.registry }} registry.</summary>
 
-          ### Github Registry
+          ### :octocat: Github Registry
 
           You must follow these instructions if using the Github registry. If you can view this repo, then you probably have access to this package(s). Contact the repo owner if you're unsure.
 
@@ -168,7 +168,7 @@ runs:
               npmAuthToken: "<YOUR-TOKEN>"
           ```
 
-          ### NPM Registry
+          ### 🟥 NPM Registry
 
           If the package is available on the public NPM registry then you can stop here, and install the package immediately. If using [npm private packages](https://docs.npmjs.com/about-private-packages), the owner must first grant you access before continuing.
 
